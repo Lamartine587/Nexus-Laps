@@ -5,7 +5,8 @@
   "main": "server/app.js",
   "scripts": {
     "start": "node server/app.js",
-    "dev": "nodemon server/app.js"
+    "dev": "nodemon server/app.js",
+    "build": "npm install"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -17,5 +18,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
