@@ -1,4 +1,5 @@
-const API_BASE = 'http://localhost:5000/api';
+// Use relative path for API calls - will automatically use the same domain
+const API_BASE = '/api';
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -29,9 +30,9 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             // Redirect to dashboard based on role
             setTimeout(() => {
                 if (data.data.user.role === 'admin') {
-                    window.location.href = 'html/dashboard.html';
+                    window.location.href = '/admin';
                 } else {
-                    window.location.href = 'html/employee-dashboard.html';
+                    window.location.href = '/employee';
                 }
             }, 1500);
         } else {
@@ -52,9 +53,9 @@ window.addEventListener('load', () => {
     if (token && user) {
         const userData = JSON.parse(user);
         if (userData.role === 'admin') {
-            window.location.href = 'html/dashboard.html';
+            window.location.href = '/admin';
         } else {
-            window.location.href = 'html/employee-dashboard.html';
+            window.location.href = '/employee';
         }
     }
 });
