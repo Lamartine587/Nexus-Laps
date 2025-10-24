@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus ERP - Admin Dashboard</title>
+    <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <h1>Nexus ERP</h1>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="userName">Admin User</span>
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li class="nav-item active" data-page="dashboard">
+                            <span>📊 Dashboard</span>
+                        </li>
+                        <li class="nav-item" data-page="users">
+                            <span>👥 User Management</span>
+                        </li>
+                        <li class="nav-item" data-page="departments">
+                            <span>🏢 Departments</span>
+                        </li>
+                        <li class="nav-item" data-page="attendance">
+                            <span>⏱️ Attendance</span>
+                        </li>
+                        <li class="nav-item" data-page="tasks">
+                            <span>✅ Tasks</span>
+                        </li>
+                        <li class="nav-item" data-page="requests">
+                            <span>📋 Requests</span>
+                        </li>
+                        <li class="nav-item" data-page="documents">
+                            <span>📄 Documents</span>
+                        </li>
+                        <li class="nav-item" data-page="reports">
+                            <span>📈 Reports</span>
+                        </li>
+                        <li class="nav-item" data-page="settings">
+                            <span>⚙️ Settings</span>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <div class="page-header">
+                        <h2>Dashboard Overview</h2>
+                        <p>Welcome back, <span id="adminName">Admin</span></p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <h3 id="totalUsers">0</h3>
+                                <p>Total Users</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏢</div>
+                            <div class="stat-info">
+                                <h3 id="totalDepartments">0</h3>
+                                <p>Departments</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <h3 id="activeToday">0</h3>
+                                <p>Active Today</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3 id="pendingTasks">0</h3>
+                                <p>Pending Tasks</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <h3 id="totalUsers">0</h3>
+                                <p>Total Users</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏢</div>
+                            <div class="stat-info">
+                                <h3 id="totalDepartments">0</h3>
+                                <p>Departments</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <h3 id="activeToday">0</h3>
+                                <p>Active Today</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3 id="pendingTasks">0</h3>
+                                <p>Pending Tasks</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div id="activityList" class="activity-list">
+                            <!-- Activity items will be loaded here -->
+                        </div>
+                    </div>
+                    <!-- Add to sidebar -->
+<li class="nav-item" data-page="logs">
+    <span>📋 Activity Logs</span>
+</li>
+
+<!-- Add logs page -->
+<div id="logs-page" class="page">
+    <div class="page-header">
+        <h2>System Activity Logs</h2>
+        <div class="page-actions">
+            <button id="exportLogsBtn" class="btn-secondary">Export Logs</button>
+            <button id="cleanupLogsBtn" class="btn-warning">Cleanup Old Logs</button>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters-container">
+        <div class="filter-group">
+            <label>Action Type:</label>
+            <select id="logActionFilter">
+                <option value="">All Actions</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Severity:</label>
+            <select id="logSeverityFilter">
+                <option value="">All Levels</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>Date From:</label>
+            <input type="date" id="logStartDate">
+        </div>
+        <div class="filter-group">
+            <label>Date To:</label>
+            <input type="date" id="logEndDate">
+        </div>
+        <div class="filter-group">
+            <label>Search:</label>
+            <input type="text" id="logSearch" placeholder="Search logs...">
+        </div>
+        <button id="applyLogFilters" class="btn-primary">Apply Filters</button>
+        <button id="clearLogFilters" class="btn-secondary">Clear</button>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Action</th>
+                    <th>Description</th>
+                    <th>User</th>
+                    <th>Severity</th>
+                    <th>IP Address</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody">
+                <!-- Logs will be loaded here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="logsPagination">
+        <!-- Pagination will be loaded here -->
+    </div>
+</div>
+                </div>
+
+                <!-- Users Management Page -->
+                <div id="users-page" class="page">
+                    <div class="page-header">
+                        <h2>User Management</h2>
+                        <div class="page-actions">
+                            <input type="text" id="userSearch" placeholder="Search users..." class="search-input">
+                            <button id="addUserBtn" class="btn-primary">+ Add User</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Users will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Departments Page -->
+                <div id="departments-page" class="page">
+                    <div class="page-header">
+                        <h2>Department Management</h2>
+                        <button id="addDeptBtn" class="btn-primary">+ Add Department</button>
+                    </div>
+                    
+                    <div class="cards-grid">
+                        <!-- Departments will be loaded here as cards -->
+                    </div>
+                </div>
+
+                <!-- Attendance Page -->
+                <div id="attendance-page" class="page">
+                    <div class="page-header">
+                        <h2>Attendance Tracking</h2>
+                        <div class="date-filter">
+                            <input type="date" id="attendanceDate">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Department</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Hours</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <!-- Attendance data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tasks Page -->
+                <div id="tasks-page" class="page">
+                    <div class="page-header">
+                        <h2>Task Management</h2>
+                        <div class="page-actions">
+                            <input type="text" id="taskSearch" placeholder="Search tasks..." class="search-input">
+                            <button id="addTaskBtn" class="btn-primary">+ Add Task</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Task</th>
+                                    <th>Assigned To</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Priority</th>
+                                    <th>Due Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tasksTableBody">
+                                <!-- Tasks will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Requests Page -->
+                <div id="requests-page" class="page">
+                    <div class="page-header">
+                        <h2>Request Management</h2>
+                        <div class="page-actions">
+                            <input type="text" id="requestSearch" placeholder="Search requests..." class="search-input">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Details</th>
+                                    <th>Submitted By</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTableBody">
+                                <!-- Requests will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Documents Page -->
+                <div id="documents-page" class="page">
+                    <div class="page-header">
+                        <h2>Document Management</h2>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Document</th>
+                                    <th>Category</th>
+                                    <th>Department</th>
+                                    <th>Access Level</th>
+                                    <th>Downloads</th>
+                                    <th>Uploaded</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="documentsTableBody">
+                                <!-- Documents will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports Page -->
+                <div id="reports-page" class="page">
+                    <div class="page-header">
+                        <h2>Reports & Analytics</h2>
+                    </div>
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h3>User Distribution</h3>
+                            <div id="userChart" class="chart-placeholder">
+                                Chart will be displayed here
+                            </div>
+                        </div>
+                        <div class="report-card">
+                            <h3>Department Stats</h3>
+                            <div id="deptChart" class="chart-placeholder">
+                                Chart will be displayed here
+                            </div>
+                        </div>
+                        <div class="report-card">
+                            <h3>Tasks by Status</h3>
+                            <div id="taskChart" class="chart-placeholder">
+                                Chart will be displayed here
+                            </div>
+                        </div>
+                        <div class="report-card">
+                            <h3>Requests by Status</h3>
+                            <div id="requestChart" class="chart-placeholder">
+                                Chart will be displayed here
+                            </div>
+                        </div>
+                        <div class="report-card">
+                            <h3>Attendance Overview</h3>
+                            <div id="attendanceChart" class="chart-placeholder">
+                                Chart will be displayed here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings-page" class="page">
+                    <div class="page-header">
+                        <h2>System Settings</h2>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <h3>Company Information</h3>
+                            <form id="companyForm">
+                                <div class="form-group">
+                                    <label>Company Name</label>
+                                    <input type="text" id="companyName" value="Nexus Labs">
+                                </div>
+                                <div class="form-group">
+                                    <label>Company Address</label>
+                                    <input type="text" id="companyAddress" placeholder="Enter company address">
+                                </div>
+                                <div class="form-group">
+                                    <label>Contact Email</label>
+                                    <input type="email" id="companyEmail" placeholder="contact@company.com">
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone Number</label>
+                                    <input type="tel" id="companyPhone" placeholder="+1 (555) 123-4567">
+                                </div>
+                                <button type="submit" class="btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+                        
+                        <div class="setting-card">
+                            <h3>System Preferences</h3>
+                            <form id="systemForm">
+                                <div class="form-group">
+                                    <label>Auto-logout Time (minutes)</label>
+                                    <input type="number" id="autoLogout" value="30" min="5" max="240">
+                                </div>
+                                <div class="form-group">
+                                    <label>Default Items Per Page</label>
+                                    <select id="itemsPerPage">
+                                        <option value="10">10</option>
+                                        <option value="25" selected>25</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Notifications</label>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <label for="emailNotifications">Enable email notifications</label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary">Save Preferences</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New User</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addUserForm">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" name="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="HR">Human Resources</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Sales">Sales</option>
+                        <option value="IT">IT</option>
+                        <option value="Operations">Operations</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Position</label>
+                    <input type="text" name="position" required>
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select name="role" required>
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Department Modal -->
+    <div id="addDeptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Department</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addDeptForm">
+                <div class="form-group">
+                    <label>Department Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Budget ($)</label>
+                    <input type="number" name="budget" min="0" step="1000">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Department</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Task</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="addTaskForm">
+                <div class="form-group">
+                    <label>Task Title</label>
+                    <input type="text" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Assign To</label>
+                    <select name="assignedTo" id="taskAssignedTo" required>
+                        <option value="">Select User</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <select name="department" required>
+                        <option value="">Select Department</option>
+                        <option value="HR">Human Resources</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Sales">Sales</option>
+                        <option value="IT">IT</option>
+                        <option value="Operations">Operations</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select name="priority" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" name="dueDate">
+                </div>
+                <div class="form-group">
+                    <label>Estimated Hours</label>
+                    <input type="number" name="estimatedHours" min="0" step="0.5">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/admin.js"></script>
+</body>
+</html>

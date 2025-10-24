@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus ERP - Employee Dashboard</title>
+    <link rel="stylesheet" href="../css/employee.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <h1>Nexus ERP</h1>
+                    <span id="departmentBadge" class="department-badge">Department</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <span id="userName">Employee Name</span>
+                    <span id="userPosition">Position</span>
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <nav class="sidebar-nav">
+                    <ul>
+                        <li class="nav-item active" data-page="dashboard">
+                            <span>📊 My Dashboard</span>
+                        </li>
+                        <li class="nav-item" data-page="attendance">
+                            <span>⏱️ My Attendance</span>
+                        </li>
+                        <li class="nav-item" data-page="profile">
+                            <span>👤 My Profile</span>
+                        </li>
+                        <li class="nav-item" data-page="tasks">
+                            <span>✅ My Tasks</span>
+                        </li>
+                        <li class="nav-item" data-page="documents">
+                            <span>📄 Documents</span>
+                        </li>
+                        <li class="nav-item" data-page="requests">
+                            <span>📋 My Requests</span>
+                        </li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <div class="page-header">
+                        <h2>My Dashboard</h2>
+                        <p>Welcome back, <span id="employeeName">Employee</span></p>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-info">
+                                <h3 id="daysWorked">0</h3>
+                                <p>Days Worked This Month</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">⏱️</div>
+                            <div class="stat-info">
+                                <h3 id="avgHours">0</h3>
+                                <p>Avg. Hours/Day</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info">
+                                <h3 id="tasksCompleted">0</h3>
+                                <p>Tasks Completed</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-info">
+                                <h3 id="pendingRequests">0</h3>
+                                <p>Pending Requests</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Department Specific Content -->
+                    <div id="hr-content" class="dept-content" style="display: none;">
+                        <h3>HR Dashboard</h3>
+                        <div class="dept-grid">
+                            <div class="dept-card">
+                                <h4>Employee Records</h4>
+                                <p>Manage employee information and records</p>
+                                <button class="btn-primary">View Records</button>
+                            </div>
+                            <div class="dept-card">
+                                <h4>Leave Requests</h4>
+                                <p>Approve or reject leave applications</p>
+                                <button class="btn-primary">Manage Leaves</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="finance-content" class="dept-content" style="display: none;">
+                        <h3>Finance Dashboard</h3>
+                        <div class="dept-grid">
+                            <div class="dept-card">
+                                <h4>Expense Reports</h4>
+                                <p>Track and approve expense reports</p>
+                                <button class="btn-primary">View Reports</button>
+                            </div>
+                            <div class="dept-card">
+                                <h4>Budget Overview</h4>
+                                <p>Monitor department budgets</p>
+                                <button class="btn-primary">View Budget</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sales-content" class="dept-content" style="display: none;">
+                        <h3>Sales Dashboard</h3>
+                        <div class="dept-grid">
+                            <div class="dept-card">
+                                <h4>Sales Performance</h4>
+                                <p>View sales metrics and targets</p>
+                                <button class="btn-primary">View Performance</button>
+                            </div>
+                            <div class="dept-card">
+                                <h4>Customer Management</h4>
+                                <p>Manage customer relationships</p>
+                                <button class="btn-primary">View Customers</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="it-content" class="dept-content" style="display: none;">
+                        <h3>IT Dashboard</h3>
+                        <div class="dept-grid">
+                            <div class="dept-card">
+                                <h4>System Status</h4>
+                                <p>Monitor system health and performance</p>
+                                <button class="btn-primary">View Status</button>
+                            </div>
+                            <div class="dept-card">
+                                <h4>Support Tickets</h4>
+                                <p>Manage IT support requests</p>
+                                <button class="btn-primary">View Tickets</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="actions-grid">
+                            <button class="action-btn" onclick="employee.checkIn()">
+                                <span>🔔</span>
+                                Check In
+                            </button>
+                            <button class="action-btn" onclick="employee.checkOut()">
+                                <span>🚪</span>
+                                Check Out
+                            </button>
+                            <button class="action-btn" onclick="employee.showRequestModal()">
+                                <span>📋</span>
+                                Submit Request
+                            </button>
+                            <button class="action-btn" onclick="employee.editProfile()">
+                                <span>👤</span>
+                                Update Profile
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Page -->
+                <div id="attendance-page" class="page">
+                    <div class="page-header">
+                        <h2>My Attendance</h2>
+                        <div class="date-filter">
+                            <input type="month" id="attendanceMonth" value="">
+                        </div>
+                    </div>
+                    
+                    <div class="attendance-summary">
+                        <div class="summary-card">
+                            <h4>This Month</h4>
+                            <div class="summary-stats">
+                                <div class="summary-item">
+                                    <span class="label">Days Present</span>
+                                    <span class="value" id="daysPresent">0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="label">Total Hours</span>
+                                    <span class="value" id="totalHours">0</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="label">Avg. per Day</span>
+                                    <span class="value" id="avgPerDay">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Check In</th>
+                                    <th>Check Out</th>
+                                    <th>Hours</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <!-- Attendance data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Profile Page -->
+                <div id="profile-page" class="page">
+                    <div class="page-header">
+                        <h2>My Profile</h2>
+                        <button class="btn-primary" onclick="employee.editProfile()">Edit Profile</button>
+                    </div>
+                    
+                    <div class="profile-container">
+                        <div class="profile-card">
+                            <h3>Personal Information</h3>
+                            <div class="profile-info">
+                                <div class="info-item">
+                                    <label>Employee ID</label>
+                                    <span id="profileEmployeeId">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Full Name</label>
+                                    <span id="profileFullName">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email</label>
+                                    <span id="profileEmail">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Department</label>
+                                    <span id="profileDepartment">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Position</label>
+                                    <span id="profilePosition">-</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Join Date</label>
+                                    <span id="profileJoinDate">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-card">
+                            <h3>Contact Information</h3>
+                            <div class="profile-info">
+                                <div class="info-item">
+                                    <label>Phone</label>
+                                    <span id="profilePhone">Not set</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Address</label>
+                                    <span id="profileAddress">Not set</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Emergency Contact</label>
+                                    <span id="profileEmergencyContact">Not set</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-card">
+                            <h3>Employment Details</h3>
+                            <div class="profile-info">
+                                <div class="info-item">
+                                    <label>Employment Type</label>
+                                    <span id="profileEmploymentType">Not set</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Salary</label>
+                                    <span id="profileSalary">Not set</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Bank Account</label>
+                                    <span id="profileBankAccount">Not set</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks Page -->
+                <div id="tasks-page" class="page">
+                    <div class="page-header">
+                        <h2>My Tasks</h2>
+                    </div>
+                    
+                    <div class="tasks-container">
+                        <div class="task-column">
+                            <h4>📋 To Do</h4>
+                            <div id="todoTasks" class="task-list">
+                                <!-- To Do tasks will appear here -->
+                            </div>
+                        </div>
+                        <div class="task-column">
+                            <h4>🔄 In Progress</h4>
+                            <div id="progressTasks" class="task-list">
+                                <!-- In Progress tasks will appear here -->
+                            </div>
+                        </div>
+                        <div class="task-column">
+                            <h4>✅ Completed</h4>
+                            <div id="completedTasks" class="task-list">
+                                <!-- Completed tasks will appear here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documents Page -->
+                <div id="documents-page" class="page">
+                    <div class="page-header">
+                        <h2>Documents</h2>
+                        <div class="search-box">
+                            <input type="text" id="documentSearch" placeholder="Search documents..." class="search-input">
+                        </div>
+                    </div>
+                    <div class="documents-grid">
+                        <!-- Documents will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Requests Page -->
+                <div id="requests-page" class="page">
+                    <div class="page-header">
+                        <h2>My Requests</h2>
+                        <button class="btn-primary" onclick="employee.showRequestModal()">+ New Request</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Details</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requestsTableBody">
+                                <!-- Requests will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+<!-- Edit Profile Modal -->
+    <!-- Request Modal -->
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="profileEditForm">
+                    <div class="form-section">
+                        <h4>Contact Information</h4>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="editPhone" name="phone" placeholder="Enter phone number">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Address</h4>
+                        <div class="form-group">
+                            <label>Street</label>
+                            <input type="text" id="editStreet" name="street" placeholder="Enter street address">
+                        </div>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input type="text" id="editCity" name="city" placeholder="Enter city">
+                        </div>
+                        <div class="form-group">
+                            <label>State</label>
+                            <input type="text" id="editState" name="state" placeholder="Enter state">
+                        </div>
+                        <div class="form-group">
+                            <label>Zip Code</label>
+                            <input type="text" id="editZipCode" name="zipCode" placeholder="Enter zip code">
+                        </div>
+                        <div class="form-group">
+                            <label>Country</label>
+                            <input type="text" id="editCountry" name="country" placeholder="Enter country">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h4>Emergency Contact</h4>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" id="editEmergencyName" name="emergencyName" placeholder="Enter emergency contact name">
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship</label>
+                            <input type="text" id="editEmergencyRelationship" name="emergencyRelationship" placeholder="Enter relationship">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" id="editEmergencyPhone" name="emergencyPhone" placeholder="Enter emergency phone number">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="requestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Submit New Request</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="requestForm">
+                <div class="form-group">
+                    <label>Request Type</label>
+                    <select name="requestType" id="requestType" required onchange="employee.toggleRequestFields()">
+                        <option value="">Select Type</option>
+                        <option value="leave">Leave Request</option>
+                        <option value="expense">Expense Claim</option>
+                        <option value="support">IT Support</option>
+                        <option value="resource">Resource Request</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select name="priority" required>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" name="subject" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" rows="4" required></textarea>
+                </div>
+
+                <!-- Leave Request Fields -->
+                <div id="leaveFields" style="display: none;">
+                    <div class="form-group">
+                        <label>Leave Type</label>
+                        <select name="leaveType">
+                            <option value="vacation">Vacation</option>
+                            <option value="sick">Sick Leave</option>
+                            <option value="personal">Personal</option>
+                            <option value="maternity">Maternity</option>
+                            <option value="paternity">Paternity</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" name="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" name="endDate">
+                    </div>
+                </div>
+
+                <!-- Expense Request Fields -->
+                <div id="expenseFields" style="display: none;">
+                    <div class="form-group">
+                        <label>Expense Amount</label>
+                        <input type="number" name="expenseAmount" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Expense Category</label>
+                        <select name="expenseCategory">
+                            <option value="travel">Travel</option>
+                            <option value="meals">Meals</option>
+                            <option value="equipment">Equipment</option>
+                            <option value="training">Training</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Support Request Fields -->
+                <div id="supportFields" style="display: none;">
+                    <div class="form-group">
+                        <label>Support Category</label>
+                        <select name="supportCategory">
+                            <option value="hardware">Hardware</option>
+                            <option value="software">Software</option>
+                            <option value="network">Network</option>
+                            <option value="access">Access</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Urgency</label>
+                        <select name="urgency">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Submit Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+            <form id="profileEditForm">
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="editPhone" name="phone">
+                </div>
+
+                <h4>Address</h4>
+                <div class="form-group">
+                    <label>Street</label>
+                    <input type="text" id="editStreet" name="street">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="editCity" name="city">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="editState" name="state">
+                </div>
+                <div class="form-group">
+                    <label>Zip Code</label>
+                    <input type="text" id="editZipCode" name="zipCode">
+                </div>
+                <div class="form-group">
+                    <label>Country</label>
+                    <input type="text" id="editCountry" name="country">
+                </div>
+
+                <h4>Emergency Contact</h4>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="editEmergencyName" name="emergencyName">
+                </div>
+                <div class="form-group">
+                    <label>Relationship</label>
+                    <input type="text" id="editEmergencyRelationship" name="emergencyRelationship">
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="editEmergencyPhone" name="emergencyPhone">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/employee.js"></script>
+</body>
+</html>
