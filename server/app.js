@@ -9,9 +9,9 @@ const PORT = process.env.PORT || 10000;
 
 // Enhanced CORS for production and custom domain
 const allowedOrigins = [
-  'https://yourdomain.com', // REPLACE WITH YOUR ACTUAL DOMAIN
-  'https://www.yourdomain.com', // REPLACE WITH YOUR ACTUAL DOMAIN
-  'http://localhost:3000',
+  'https://lamartinekipkoech.space', // REPLACE WITH YOUR ACTUAL DOMAIN
+  'https://www.lamartinekipkoech.space', // REPLACE WITH YOUR ACTUAL DOMAIN
+  'http://localhost:5000',
   `https://nexus-erp.onrender.com` // Your Render subdomain
 ];
 
