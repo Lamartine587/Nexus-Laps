@@ -94,6 +94,8 @@ app.use('/api/employeeProfile', require('./routes/employeeProfile'));
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/requests', require('./routes/requests'));
 app.use('/api/documents', require('./routes/documents'));
+app.use('/api/logs', require('./routes/logs'));
+
 
 // Health check endpoint (for monitoring)
 app.get('/api/health', (req, res) => {
