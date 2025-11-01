@@ -1,4 +1,3 @@
-// Use relative path for API calls - will automatically use the same domain
 const API_BASE = '/api';
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -7,8 +6,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const messageDiv = document.getElementById('message');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    
+    // Show loading state
+    submitBtn.textContent = 'Signing In...';
+    submitBtn.disabled = true;
     
     try {
+        console.log('Attempting login for:', email);
+        
         const response = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
             headers: {
@@ -18,6 +24,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         });
         
         const data = await response.json();
+        console.log('Login response:', data);
         
         if (data.status === 'success') {
             // Store token and user data
@@ -34,14 +41,19 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 } else {
                     window.location.href = '/employee';
                 }
-            }, 1500);
+            }, 1000);
         } else {
-            messageDiv.textContent = data.message || 'Login failed';
+            messageDiv.textContent = data.message || 'Login failed. Please try again.';
             messageDiv.className = 'message error';
         }
     } catch (error) {
-        messageDiv.textContent = 'Network error. Please try again.';
+        console.error('Login error:', error);
+        messageDiv.textContent = 'Network error. Please check your connection and try again.';
         messageDiv.className = 'message error';
+    } finally {
+        // Reset button state
+        submitBtn.textContent = 'Sign In';
+        submitBtn.disabled = false;
     }
 });
 
@@ -51,11 +63,29 @@ window.addEventListener('load', () => {
     const user = localStorage.getItem('user');
     
     if (token && user) {
-        const userData = JSON.parse(user);
-        if (userData.role === 'admin') {
-            window.location.href = '/admin';
-        } else {
-            window.location.href = '/employee';
+        try {
+            const userData = JSON.parse(user);
+            if (userData.role === 'admin') {
+                window.location.href = '/admin';
+            } else {
+                window.location.href = '/employee';
+            }
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            localStorage.clear();
         }
     }
 });
+
+// Add this function to test API connectivity
+window.testAPI = async function() {
+    try {
+        const response = await fetch(`${API_BASE}/health`);
+        const data = await response.json();
+        console.log('API Health Check:', data);
+        return data;
+    } catch (error) {
+        console.error('API Health Check Failed:', error);
+        return null;
+    }
+};
