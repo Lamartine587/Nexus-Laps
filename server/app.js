@@ -13,6 +13,7 @@ const allowedOrigins = [
   'https://www.lamartinekipkoech.space',
   'http://localhost:5000',
   'http://localhost:3000',
+  'http://localhost:10000',
   'https://nexus-laps.onrender.com',
   'https://*.onrender.com' // Allow all Render subdomains
 ];
