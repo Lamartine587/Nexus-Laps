@@ -1,7 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { protect } = require('../middleware/auth'); // Add this import
+const { protect } = require('../middleware/auth');
+const logger = require('../middleware/logger');
 
 const router = express.Router();
 
@@ -19,6 +20,7 @@ router.post('/register', async (req, res) => {
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      await logger.log(req, 'registration_failed', `Registration failed - user already exists: ${email}`, { email }, 'medium');
       return res.status(400).json({
         status: 'fail',
         message: 'User already exists with this email'
@@ -45,6 +47,9 @@ router.post('/register', async (req, res) => {
     newUser.lastLogin = new Date();
     await newUser.save();
 
+    // Log user creation
+    await logger.userCreated(req, newUser, 'via registration');
+
     res.status(201).json({
       status: 'success',
       token,
@@ -62,6 +67,7 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'user_registration');
     console.error('Registration error:', error);
     res.status(400).json({
       status: 'fail',
@@ -78,6 +84,7 @@ router.post('/login', async (req, res) => {
     console.log('Login attempt for:', email);
 
     if (!email || !password) {
+      await logger.loginFailed(req, email || 'unknown', 'Missing email or password');
       return res.status(400).json({
         status: 'fail',
         message: 'Please provide email and password'
@@ -88,6 +95,7 @@ router.post('/login', async (req, res) => {
     
     if (!user) {
       console.log('User not found:', email);
+      await logger.loginFailed(req, email, 'User not found');
       return res.status(401).json({
         status: 'fail',
         message: 'Incorrect email or password'
@@ -96,6 +104,7 @@ router.post('/login', async (req, res) => {
 
     // Check if user is active
     if (!user.isActive) {
+      await logger.loginFailed(req, email, 'Account deactivated');
       return res.status(401).json({
         status: 'fail',
         message: 'Account is deactivated. Please contact administrator.'
@@ -107,6 +116,7 @@ router.post('/login', async (req, res) => {
     
     if (!isPasswordCorrect) {
       console.log('Incorrect password for:', email);
+      await logger.loginFailed(req, email, 'Incorrect password');
       return res.status(401).json({
         status: 'fail',
         message: 'Incorrect email or password'
@@ -118,6 +128,9 @@ router.post('/login', async (req, res) => {
     await user.save();
 
     const token = signToken(user._id);
+
+    // Log successful login
+    await logger.loginSuccess(req, user);
 
     console.log('Login successful for:', email);
 
@@ -138,6 +151,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'user_login');
     console.error('Login error:', error);
     res.status(400).json({
       status: 'fail',
@@ -149,6 +163,7 @@ router.post('/login', async (req, res) => {
 // Get current user (protected)
 router.get('/me', protect, async (req, res) => {
   try {
+    await logger.log(req, 'profile_viewed', 'User viewed their profile', {}, 'low');
     res.status(200).json({
       status: 'success',
       data: {
@@ -156,6 +171,7 @@ router.get('/me', protect, async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'get_current_user');
     res.status(400).json({
       status: 'fail',
       message: error.message
@@ -164,11 +180,20 @@ router.get('/me', protect, async (req, res) => {
 });
 
 // Logout (client-side token removal)
-router.post('/logout', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'Logged out successfully'
-  });
+router.post('/logout', protect, async (req, res) => {
+  try {
+    await logger.logout(req);
+    res.status(200).json({
+      status: 'success',
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    await logger.systemError(req, error, 'user_logout');
+    res.status(400).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
 });
 
 module.exports = router;

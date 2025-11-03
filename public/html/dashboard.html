@@ -49,6 +49,9 @@
                         <li class="nav-item" data-page="documents">
                             <span>📄 Documents</span>
                         </li>
+                        <li class="nav-item" data-page="logs">
+                            <span>📋 Activity Logs</span>
+                        </li>
                         <li class="nav-item" data-page="reports">
                             <span>📈 Reports</span>
                         </li>
@@ -97,117 +100,72 @@
                                 <p>Pending Tasks</p>
                             </div>
                         </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-info">
+                                <h3 id="pendingRequests">0</h3>
+                                <p>Pending Requests</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <h3 id="totalLogs">0</h3>
+                                <p>System Logs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-content">
+                        <div class="recent-activity">
+                            <h3>Recent Activity</h3>
+                            <div id="activityList" class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon">👥</div>
+                                    <div>
+                                        <strong>System Initialized</strong>
+                                        <p>Admin dashboard loaded successfully</p>
+                                        <small>Just now</small>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">⚙️</div>
+                                    <div>
+                                        <strong>Ready for Management</strong>
+                                        <p>All admin features are now available</p>
+                                        <small>Just now</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         
-                    </div>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-icon">👥</div>
-                            <div class="stat-info">
-                                <h3 id="totalUsers">0</h3>
-                                <p>Total Users</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">🏢</div>
-                            <div class="stat-info">
-                                <h3 id="totalDepartments">0</h3>
-                                <p>Departments</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">⏱️</div>
-                            <div class="stat-info">
-                                <h3 id="activeToday">0</h3>
-                                <p>Active Today</p>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon">📈</div>
-                            <div class="stat-info">
-                                <h3 id="pendingTasks">0</h3>
-                                <p>Pending Tasks</p>
+                        <div class="quick-stats">
+                            <h3>System Status</h3>
+                            <div class="status-cards">
+                                <div class="status-card">
+                                    <div class="status-icon">🔒</div>
+                                    <div class="status-info">
+                                        <h4>System Secure</h4>
+                                        <p>All systems operational</p>
+                                    </div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-icon">📊</div>
+                                    <div class="status-info">
+                                        <h4>Logs Active</h4>
+                                        <p>Audit trail enabled</p>
+                                    </div>
+                                </div>
+                                <div class="status-card">
+                                    <div class="status-icon">✅</div>
+                                    <div class="status-info">
+                                        <h4>Database Connected</h4>
+                                        <p>All services running</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="recent-activity">
-                        <h3>Recent Activity</h3>
-                        <div id="activityList" class="activity-list">
-                            <!-- Activity items will be loaded here -->
-                        </div>
-                    </div>
-                    <!-- Add to sidebar -->
-<li class="nav-item" data-page="logs">
-    <span>📋 Activity Logs</span>
-</li>
-
-<!-- Add logs page -->
-<div id="logs-page" class="page">
-    <div class="page-header">
-        <h2>System Activity Logs</h2>
-        <div class="page-actions">
-            <button id="exportLogsBtn" class="btn-secondary">Export Logs</button>
-            <button id="cleanupLogsBtn" class="btn-warning">Cleanup Old Logs</button>
-        </div>
-    </div>
-    
-    <!-- Filters -->
-    <div class="filters-container">
-        <div class="filter-group">
-            <label>Action Type:</label>
-            <select id="logActionFilter">
-                <option value="">All Actions</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Severity:</label>
-            <select id="logSeverityFilter">
-                <option value="">All Levels</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="critical">Critical</option>
-            </select>
-        </div>
-        <div class="filter-group">
-            <label>Date From:</label>
-            <input type="date" id="logStartDate">
-        </div>
-        <div class="filter-group">
-            <label>Date To:</label>
-            <input type="date" id="logEndDate">
-        </div>
-        <div class="filter-group">
-            <label>Search:</label>
-            <input type="text" id="logSearch" placeholder="Search logs...">
-        </div>
-        <button id="applyLogFilters" class="btn-primary">Apply Filters</button>
-        <button id="clearLogFilters" class="btn-secondary">Clear</button>
-    </div>
-
-    <div class="table-container">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Action</th>
-                    <th>Description</th>
-                    <th>User</th>
-                    <th>Severity</th>
-                    <th>IP Address</th>
-                </tr>
-            </thead>
-            <tbody id="logsTableBody">
-                <!-- Logs will be loaded here -->
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Pagination -->
-    <div class="pagination" id="logsPagination">
-        <!-- Pagination will be loaded here -->
-    </div>
-</div>
                 </div>
 
                 <!-- Users Management Page -->
@@ -230,6 +188,7 @@
                                     <th>Department</th>
                                     <th>Position</th>
                                     <th>Status</th>
+                                    <th>Join Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -359,6 +318,81 @@
                                 <!-- Documents will be loaded here -->
                             </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <!-- Logs Page -->
+                <div id="logs-page" class="page">
+                    <div class="page-header">
+                        <h2>System Activity Logs</h2>
+                        <div class="page-actions">
+                            <button id="exportLogsBtn" class="btn-secondary">Export Logs</button>
+                            <button id="cleanupLogsBtn" class="btn-warning">Cleanup Old Logs</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label>Action Type:</label>
+                            <select id="logActionFilter">
+                                <option value="">All Actions</option>
+                                <!-- Action options will be loaded dynamically -->
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Severity:</label>
+                            <select id="logSeverityFilter">
+                                <option value="">All Levels</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                                <option value="critical">Critical</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Date From:</label>
+                            <input type="date" id="logStartDate">
+                        </div>
+                        <div class="filter-group">
+                            <label>Date To:</label>
+                            <input type="date" id="logEndDate">
+                        </div>
+                        <div class="filter-group">
+                            <label>Search:</label>
+                            <input type="text" id="logSearch" placeholder="Search logs...">
+                        </div>
+                        <div class="filter-group">
+                            <label>&nbsp;</label>
+                            <button id="applyLogFilters" class="btn-primary">Apply Filters</button>
+                        </div>
+                        <div class="filter-group">
+                            <label>&nbsp;</label>
+                            <button id="clearLogFilters" class="btn-secondary">Clear</button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table logs-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Description</th>
+                                    <th>User</th>
+                                    <th>Severity</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsTableBody">
+                                <!-- Logs will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="logsPagination">
+                        <!-- Pagination will be loaded here -->
                     </div>
                 </div>
 

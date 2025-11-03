@@ -1,6 +1,7 @@
 const express = require('express');
 const Log = require('../models/Log');
 const { protect, authorize } = require('../middleware/auth');
+const logger = require('../middleware/logger');
 
 const router = express.Router();
 
@@ -49,6 +50,10 @@ router.get('/', authorize('admin'), async (req, res) => {
       query.description = { $regex: search, $options: 'i' };
     }
 
+    await logger.log(req, 'logs_viewed', 'Admin viewed system logs', { 
+      page, limit, action, severity, search 
+    }, 'low');
+
     const logs = await Log.find(query)
       .populate('user', 'firstName lastName email role')
       .populate('targetUser', 'firstName lastName email')
@@ -71,6 +76,7 @@ router.get('/', authorize('admin'), async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'fetch_logs');
     console.error('Error fetching logs:', error);
     res.status(400).json({
       status: 'fail',
@@ -85,6 +91,8 @@ router.get('/stats', authorize('admin'), async (req, res) => {
     const { days = 30 } = req.query;
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - parseInt(days));
+
+    await logger.log(req, 'log_stats_viewed', 'Admin viewed log statistics', { days }, 'low');
 
     const stats = await Log.aggregate([
       {
@@ -149,6 +157,7 @@ router.get('/stats', authorize('admin'), async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'fetch_log_stats');
     console.error('Error fetching log stats:', error);
     res.status(400).json({
       status: 'fail',
@@ -160,6 +169,8 @@ router.get('/stats', authorize('admin'), async (req, res) => {
 // Get available log actions (for filters)
 router.get('/actions', authorize('admin'), async (req, res) => {
   try {
+    await logger.log(req, 'log_actions_viewed', 'Admin viewed available log actions', {}, 'low');
+    
     const actions = await Log.distinct('action');
     res.status(200).json({
       status: 'success',
@@ -168,6 +179,7 @@ router.get('/actions', authorize('admin'), async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'fetch_log_actions');
     console.error('Error fetching log actions:', error);
     res.status(400).json({
       status: 'fail',
@@ -188,6 +200,11 @@ router.delete('/cleanup', authorize('admin'), async (req, res) => {
       severity: { $ne: 'critical' } // Keep critical logs forever
     });
 
+    await logger.log(req, 'logs_cleanup', `Admin cleaned up logs older than ${days} days`, { 
+      deletedCount: result.deletedCount,
+      days 
+    }, 'medium');
+
     res.status(200).json({
       status: 'success',
       data: {
@@ -196,7 +213,34 @@ router.delete('/cleanup', authorize('admin'), async (req, res) => {
       }
     });
   } catch (error) {
+    await logger.systemError(req, error, 'cleanup_logs');
     console.error('Error cleaning up logs:', error);
+    res.status(400).json({
+      status: 'fail',
+      message: error.message
+    });
+  }
+});
+
+// Export logs (simulated)
+router.get('/export', authorize('admin'), async (req, res) => {
+  try {
+    const { format = 'json' } = req.query;
+    
+    await logger.log(req, 'logs_exported', `Admin exported logs in ${format} format`, { format }, 'low');
+
+    // In a real implementation, this would generate a file
+    res.status(200).json({
+      status: 'success',
+      data: {
+        message: `Log export in ${format} format would be generated here`,
+        format,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    await logger.systemError(req, error, 'export_logs');
+    console.error('Error exporting logs:', error);
     res.status(400).json({
       status: 'fail',
       message: error.message

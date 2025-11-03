@@ -2,6 +2,7 @@ const express = require('express');
 const EmployeeProfile = require('../models/EmployeeProfile');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const logger = require('../middleware/logger');
 
 const router = express.Router();
 
@@ -44,7 +45,11 @@ router.get('/my-profile', async (req, res) => {
             });
             
             await profile.populate('user', 'firstName lastName email department position employeeId createdAt');
+            
+            await logger.log(req, 'profile_created', 'Auto-created employee profile', { userId: req.user._id }, 'low');
         }
+
+        await logger.log(req, 'profile_viewed', 'User viewed their employee profile', {}, 'low');
 
         res.status(200).json({
             status: 'success',
@@ -53,6 +58,7 @@ router.get('/my-profile', async (req, res) => {
             }
         });
     } catch (error) {
+        await logger.systemError(req, error, 'fetch_employee_profile');
         console.error('Error fetching employee profile:', error);
         res.status(400).json({
             status: 'fail',
@@ -64,11 +70,30 @@ router.get('/my-profile', async (req, res) => {
 // Update employee profile
 router.patch('/my-profile', async (req, res) => {
     try {
+        const oldProfile = await EmployeeProfile.findOne({ user: req.user._id });
+        
         const profile = await EmployeeProfile.findOneAndUpdate(
             { user: req.user._id },
             req.body,
             { new: true, runValidators: true }
         ).populate('user', 'firstName lastName email department position employeeId createdAt');
+
+        // Log profile update
+        const changes = {};
+        if (oldProfile) {
+            Object.keys(req.body).forEach(key => {
+                if (JSON.stringify(oldProfile[key]) !== JSON.stringify(req.body[key])) {
+                    changes[key] = {
+                        from: oldProfile[key],
+                        to: req.body[key]
+                    };
+                }
+            });
+        }
+
+        if (Object.keys(changes).length > 0) {
+            await logger.log(req, 'profile_updated', 'User updated their employee profile', { changes }, 'low');
+        }
 
         res.status(200).json({
             status: 'success',
@@ -77,6 +102,7 @@ router.patch('/my-profile', async (req, res) => {
             }
         });
     } catch (error) {
+        await logger.systemError(req, error, 'update_employee_profile');
         console.error('Error updating employee profile:', error);
         res.status(400).json({
             status: 'fail',
@@ -85,48 +111,6 @@ router.patch('/my-profile', async (req, res) => {
     }
 });
 
-// Helper function to generate sample attendance data
-const generateSampleAttendanceData = (month, year) => {
-    const currentDate = new Date();
-    const targetMonth = month ? parseInt(month) - 1 : currentDate.getMonth();
-    const targetYear = year ? parseInt(year) : currentDate.getFullYear();
-    
-    const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
-    const attendanceData = [];
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(targetYear, targetMonth, day);
-        
-        // Skip weekends (Saturday=6, Sunday=0) and some random days for realism
-        if (date.getDay() === 0 || date.getDay() === 6 || Math.random() < 0.3) {
-            continue;
-        }
-
-        // Skip future dates
-        if (date > currentDate) {
-            continue;
-        }
-
-        const checkIn = new Date(date);
-        checkIn.setHours(8 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 60));
-        
-        const checkOut = new Date(checkIn);
-        checkOut.setHours(checkIn.getHours() + 8 + Math.floor(Math.random() * 1.5));
-        
-        const hoursWorked = ((checkOut - checkIn) / (1000 * 60 * 60)).toFixed(1);
-
-        attendanceData.push({
-            date: date.toISOString().split('T')[0],
-            checkIn: checkIn.toTimeString().split(' ')[0],
-            checkOut: checkOut.toTimeString().split(' ')[0],
-            hoursWorked: parseFloat(hoursWorked),
-            status: hoursWorked >= 7 ? 'Present' : hoursWorked >= 4 ? 'Half-day' : 'Absent'
-        });
-    }
-
-    return attendanceData;
-};
-
 // Get employee attendance
 router.get('/my-attendance', async (req, res) => {
     try {
@@ -134,8 +118,45 @@ router.get('/my-attendance', async (req, res) => {
         
         console.log('📅 Fetching attendance for:', { month, year, user: req.user._id });
 
+        await logger.log(req, 'attendance_viewed', 'User viewed their attendance via profile', { month, year }, 'low');
+
         // Generate sample attendance data
-        const attendanceData = generateSampleAttendanceData(month, year);
+        const currentDate = new Date();
+        const targetMonth = month ? parseInt(month) - 1 : currentDate.getMonth();
+        const targetYear = year ? parseInt(year) : currentDate.getFullYear();
+        
+        const daysInMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        const attendanceData = [];
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(targetYear, targetMonth, day);
+            
+            // Skip weekends (Saturday=6, Sunday=0) and some random days for realism
+            if (date.getDay() === 0 || date.getDay() === 6 || Math.random() < 0.3) {
+                continue;
+            }
+
+            // Skip future dates
+            if (date > currentDate) {
+                continue;
+            }
+
+            const checkIn = new Date(date);
+            checkIn.setHours(8 + Math.floor(Math.random() * 2), Math.floor(Math.random() * 60));
+            
+            const checkOut = new Date(checkIn);
+            checkOut.setHours(checkIn.getHours() + 8 + Math.floor(Math.random() * 1.5));
+            
+            const hoursWorked = ((checkOut - checkIn) / (1000 * 60 * 60)).toFixed(1);
+
+            attendanceData.push({
+                date: date.toISOString().split('T')[0],
+                checkIn: checkIn.toTimeString().split(' ')[0],
+                checkOut: checkOut.toTimeString().split(' ')[0],
+                hoursWorked: parseFloat(hoursWorked),
+                status: hoursWorked >= 7 ? 'Present' : hoursWorked >= 4 ? 'Half-day' : 'Absent'
+            });
+        }
 
         res.status(200).json({
             status: 'success',
@@ -145,6 +166,7 @@ router.get('/my-attendance', async (req, res) => {
             }
         });
     } catch (error) {
+        await logger.systemError(req, error, 'fetch_profile_attendance');
         console.error('❌ Error fetching attendance:', error);
         res.status(400).json({
             status: 'fail',
@@ -157,7 +179,9 @@ router.get('/my-attendance', async (req, res) => {
 router.get('/my-tasks', async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
-        const tasks = generateDepartmentTasks(user.department);
+        const tasks = this.generateDepartmentTasks(user.department);
+
+        await logger.log(req, 'tasks_viewed', 'User viewed their tasks via profile', { department: user.department }, 'low');
 
         res.status(200).json({
             status: 'success',
@@ -166,6 +190,7 @@ router.get('/my-tasks', async (req, res) => {
             }
         });
     } catch (error) {
+        await logger.systemError(req, error, 'fetch_profile_tasks');
         console.error('Error fetching tasks:', error);
         res.status(400).json({
             status: 'fail',
