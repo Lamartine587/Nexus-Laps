@@ -85,7 +85,7 @@ const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:10000',
     'https://nexus-erp.onrender.com',
-    'https://nexus-laps.onrender.com',
+    'https://nexus-laps.onrender.com',// added
     'https://*.onrender.com'
 ];
 
